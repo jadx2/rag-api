@@ -1,0 +1,15 @@
+node_modules/
+.env
+.env.*
+!.env.example
+
+data/
+gestion.pdf
+
+*.swp
+*.swo
+.DS_Store
+
+dist/
+build/
+*.log
