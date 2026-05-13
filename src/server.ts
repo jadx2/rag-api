@@ -19,9 +19,9 @@ app.post("/ingest", async (req, res) => {
 
   const text = await loadPdf(filePath);
   const chunks = chunkText(text, 200, 20);
-  await storeChunks(chunks);
+  await storeChunks(chunks, filePath);
 
-  res.json({ message: `Ingested ${chunks.length} chunks` });
+  res.json({ message: `Ingested ${chunks.length} chunks from ${filePath}` });
 });
 
 app.post("/ask", async (req, res) => {

@@ -20,21 +20,32 @@ async function getTable() {
   return table;
 }
 
-export async function storeChunks(chunks: string[]): Promise<void> {
+export async function storeChunks(
+  chunks: string[],
+  source: string,
+): Promise<void> {
   await initializeDb();
+
+  const tableNames = await db.tableNames();
+
   console.log("Embeding chunks...");
   const records = await Promise.all(
     chunks.map(async (chunk, i) => ({
-      id: i,
+      id: `${source}-${i}`,
+      source,
       text: chunk,
       vector: await embed(chunk),
     })),
   );
 
-  table = await db.createTable("documents", records, {
-    writeMode: "overwrite",
-  });
-  console.log(`Stored ${records.length} chunks`);
+  if (tableNames.includes("documents")) {
+    table = await db.openTable("documents");
+    await table.add(records);
+  } else {
+    table = await db.createTable("documents", records);
+  }
+
+  console.log(`Stored ${records.length} chunks from ${source}`);
 }
 
 export async function search(query: string, limit = 3): Promise<string[]> {
